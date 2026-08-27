@@ -1,0 +1,1291 @@
+<!doctype html>
+<html lang="th">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>รายรับ - รายจ่าย</title>
+  <style>
+* {
+  box-sizing: border-box;
+}
+
+:root {
+  font-family: "Noto Sans Thai", "Tahoma", sans-serif;
+  color: #10233f;
+  background: #eef5fb;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at 15% 0%, rgba(255,255,255,.85), transparent 32rem),
+    #eef5fb;
+}
+
+button, select {
+  font: inherit;
+}
+
+.app {
+  width: min(1120px, calc(100% - 32px));
+  margin: 0 auto;
+  padding: 42px 0 64px;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  gap: 24px;
+  align-items: end;
+  margin-bottom: 28px;
+}
+
+.eyebrow {
+  margin: 0 0 7px;
+  font-size: 11px;
+  letter-spacing: .16em;
+  font-weight: 700;
+  color: #315f8c;
+}
+
+h1, h2, p {
+  margin-top: 0;
+}
+
+h1 {
+  margin-bottom: 7px;
+  font-size: clamp(30px, 5vw, 46px);
+  letter-spacing: -.04em;
+}
+
+.subtitle {
+  margin-bottom: 0;
+  color: #60758d;
+}
+
+.add-button {
+  border: 0;
+  border-radius: 12px;
+  padding: 13px 18px;
+  background: #0b1f3a;
+  color: white;
+  cursor: pointer;
+  font-weight: 700;
+  box-shadow: 0 7px 18px rgba(35,31,25,.12);
+}
+
+.add-button:hover {
+  transform: translateY(-1px);
+}
+
+.summary {
+  display: grid;
+  grid-template-columns: 1.5fr 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.balance-card,
+.summary-card {
+  border: 1px solid #d3e0ec;
+  border-radius: 18px;
+  padding: 22px;
+  background: rgba(255,255,255,.72);
+}
+
+.balance-card {
+  background: #0b1f3a;
+  color: white;
+  border-color: #0b1f3a;
+}
+
+.balance-card span,
+.summary-card span {
+  display: block;
+  font-size: 13px;
+  color: #687f98;
+  margin-bottom: 9px;
+}
+
+.balance-card span {
+  color: #b8c9da;
+}
+
+.balance-card strong,
+.summary-card strong {
+  display: block;
+  font-size: clamp(24px, 4vw, 34px);
+  letter-spacing: -.03em;
+}
+
+.income strong {
+  color: #176b9d;
+}
+
+.expense strong {
+  color: #b14f5f;
+}
+
+.summary-label {
+  display: block;
+}
+
+.summary-filter-label {
+  font-size: 11px;
+  color: #71869a;
+  margin-left: 4px;
+  font-weight: 700;
+}
+
+.toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 32px;
+  margin: 0 0 30px;
+}
+
+.location-widget {
+  position: relative;
+}
+
+.location-select-button {
+  min-width: 190px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  border: 1px solid #aec4d9;
+  border-radius: 11px;
+  padding: 10px 13px;
+  background: #e9f1f9;
+  color: #173653;
+  cursor: pointer;
+  font-weight: 700;
+  box-shadow: 0 3px 10px rgba(22, 63, 103, .06);
+}
+
+.location-select-button:hover { border-color: #8eabc2; }
+
+.location-menu {
+  position: absolute;
+  z-index: 20;
+  top: calc(100% + 7px);
+  left: 0;
+  width: 230px;
+  display: none;
+  overflow: hidden;
+  border: 1px solid #c9d9e7;
+  border-radius: 12px;
+  background: white;
+  box-shadow: 0 14px 35px rgba(22, 63, 103, .16);
+}
+
+.location-menu.open { display: block; }
+
+.location-option {
+  width: 100%;
+  border: 0;
+  border-bottom: 1px solid #e5eef5;
+  padding: 11px 14px;
+  background: white;
+  color: #294e70;
+  text-align: left;
+  cursor: pointer;
+}
+
+.location-option:last-child { border-bottom: 0; }
+.location-option:hover { background: #eef6fb; }
+
+.location-option.active {
+  background: #e6f1f8;
+  color: #0b416c;
+  font-weight: 800;
+}
+
+.category-widget {
+  position: relative;
+}
+
+.category-select-button {
+  min-width: 190px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  border: 1px solid #aec4d9;
+  border-radius: 11px;
+  padding: 10px 13px;
+  background: #e9f1f9;
+  color: #173653;
+  cursor: pointer;
+  font-weight: 700;
+  box-shadow: 0 3px 10px rgba(22, 63, 103, .06);
+}
+
+.category-select-button:hover {
+  border-color: #8eabc2;
+}
+
+.category-chevron {
+  font-size: 12px;
+  color: #60758d;
+}
+
+.category-menu {
+  position: absolute;
+  z-index: 20;
+  top: calc(100% + 7px);
+  left: 0;
+  width: 230px;
+  display: none;
+  overflow: hidden;
+  border: 1px solid #c9d9e7;
+  border-radius: 12px;
+  background: white;
+  box-shadow: 0 14px 35px rgba(22, 63, 103, .16);
+}
+
+.category-menu.open {
+  display: block;
+}
+
+.category-option {
+  width: 100%;
+  border: 0;
+  border-bottom: 1px solid #e5eef5;
+  padding: 11px 14px;
+  background: white;
+  color: #294e70;
+  text-align: left;
+  cursor: pointer;
+}
+
+.category-option:last-child {
+  border-bottom: 0;
+}
+
+.category-option:hover {
+  background: #eef6fb;
+}
+
+.category-option.active {
+  background: #e6f1f8;
+  color: #0b416c;
+  font-weight: 800;
+}
+
+.category-option.add-category {
+  color: #176b9d;
+}
+
+.month-select {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #766f66;
+  font-size: 13px;
+}
+
+.date-filter-group {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.month-select select {
+  border: 1px solid #aec4d9;
+  border-radius: 10px;
+  padding: 9px 12px;
+  background: #e9f1f9;
+  color: #0b1f3a;
+}
+
+.shelf {
+  position: relative;
+}
+
+.shelf-heading {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+
+.shelf-heading h2 {
+  margin: 0;
+  font-size: 23px;
+}
+
+.shelf-heading > span {
+  color: #6d8196;
+  font-size: 13px;
+}
+
+.transaction-table-wrap {
+  overflow-x: auto;
+  border: 1px solid #d5e2ee;
+  border-radius: 14px;
+  background: #fff;
+  box-shadow: 0 8px 24px rgba(22, 63, 103, .06);
+}
+
+.transaction-table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 680px;
+  table-layout: fixed;
+}
+
+.transaction-table th,
+.transaction-table td {
+  padding: 14px 16px;
+  border-right: 1px solid #dce8f2;
+  border-bottom: 1px solid #dce8f2;
+  vertical-align: middle;
+}
+
+.transaction-table th:last-child,
+.transaction-table td:last-child {
+  border-right: 0;
+}
+
+.transaction-table tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.transaction-table th {
+  background: #eaf3fa;
+  color: #294e70;
+  font-size: 13px;
+  font-weight: 800;
+  text-align: left;
+}
+
+.transaction-table td {
+  color: #1d3553;
+  background: #fff;
+  font-size: 14px;
+}
+
+.transaction-table tbody tr.transaction-row:hover td {
+  background: #f5f9fc;
+}
+
+.transaction-row.is-open td {
+  background: #f5f9fc;
+}
+
+.detail-row-full td {
+  padding: 0;
+  background: #f7fbfe;
+  border-bottom: 1px solid #dce8f2;
+}
+
+.detail-panel {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 8px;
+  padding: 20px 24px 22px;
+  border-top: 1px solid #dce8f2;
+  animation: slideDown .2s ease-out;
+}
+
+.detail-line {
+  min-height: 28px;
+  display: flex;
+  align-items: center;
+  color: #203b58;
+}
+
+.detail-line.type.type-income {
+  color: #176b9d;
+  font-weight: 800;
+}
+
+.detail-line.type.type-expense {
+  color: #b14f5f;
+  font-weight: 800;
+}
+
+.detail-line.category-detail {
+  color: #315f8c;
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.detail-line.title {
+  font-size: 20px;
+  font-weight: 800;
+}
+
+.detail-line.description {
+  color: #405a74;
+  font-size: 15px;
+}
+
+.detail-line.date-time {
+  color: #6d8196;
+  font-size: 14px;
+}
+
+.image-trigger {
+  width: fit-content;
+  border: 1px solid #bfd2e2;
+  border-radius: 9px;
+  background: #eaf3fa;
+  color: #164f82;
+  padding: 9px 13px;
+  cursor: pointer;
+  font-weight: 700;
+}
+
+.image-trigger:hover {
+  background: #dcecf8;
+}
+
+.no-image {
+  color: #7b8fa2;
+  font-size: 14px;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.transaction-table th:nth-child(1),
+.transaction-table td:nth-child(1) {
+  width: 18%;
+}
+
+.transaction-table th:nth-child(2),
+.transaction-table td:nth-child(2) {
+  width: 17%;
+}
+
+.transaction-table th:nth-child(3),
+.transaction-table td:nth-child(3) {
+  width: 45%;
+}
+
+.transaction-table th:nth-child(4),
+.transaction-table td:nth-child(4) {
+  width: 20%;
+  text-align: right;
+}
+
+.category-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 5px 9px;
+  border-radius: 7px;
+  background: #edf5fb;
+  color: #285a85;
+  font-weight: 700;
+  font-size: 12px;
+}
+
+.detail-button {
+  border: 0;
+  padding: 0;
+  background: transparent;
+  color: #164f82;
+  font: inherit;
+  font-weight: 700;
+  text-align: left;
+  cursor: pointer;
+}
+
+.detail-button:hover {
+  text-decoration: underline;
+}
+
+.row-time {
+  color: #8397ac;
+  font-weight: 400;
+  font-size: 13px;
+  margin-left: 6px;
+}
+
+.table-date {
+  color: #71869a;
+  white-space: nowrap;
+}
+
+.table-amount {
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.table-amount.income {
+  color: #176b9d;
+}
+
+.table-amount.expense {
+  color: #b14f5f;
+}
+
+.empty-row td {
+  padding: 44px 20px;
+  text-align: center !important;
+  color: #6c8298;
+}
+
+dialog {
+  width: min(430px, calc(100% - 28px));
+  border: 0;
+  border-radius: 20px;
+  padding: 28px;
+  color: #0b1f3a;
+  box-shadow: 0 24px 80px rgba(20,17,13,.25);
+}
+
+dialog::backdrop {
+  background: rgba(30,26,21,.4);
+  backdrop-filter: blur(3px);
+}
+
+.close {
+  position: absolute;
+  right: 14px;
+  top: 10px;
+  border: 0;
+  background: transparent;
+  font-size: 28px;
+  cursor: pointer;
+  color: #60758d;
+}
+
+.image-dialog {
+  width: min(800px, calc(100% - 28px));
+  max-width: 800px;
+  padding: 18px;
+}
+
+.image-dialog img {
+  display: block;
+  width: 100%;
+  max-height: 75vh;
+  object-fit: contain;
+  border-radius: 10px;
+  background: #eaf3fa;
+}
+
+.image-dialog .image-caption {
+  margin: 12px 0 0;
+  color: #60758d;
+  font-size: 13px;
+}
+
+
+/* Desktop-first layout: on small screens the whole page keeps its desktop
+   width and scrolls horizontally, rather than reflowing to a mobile layout. */
+html,
+body {
+  min-width: 1100px;
+}
+
+
+.day-select-wrap select:disabled { opacity: .55; cursor: not-allowed; }
+
+.category-badge.expense-badge {
+  background: #fde8e8;
+  border-color: #f5bcbc;
+  color: #b4232f;
+}
+
+.houses-container {
+  display: grid;
+  gap: 26px;
+}
+
+.house-panel {
+  border: 1px solid #d3e0ec;
+  border-radius: 20px;
+  background: rgba(255,255,255,.72);
+  overflow: hidden;
+}
+
+.house-panel-header {
+  padding: 20px 22px 16px;
+  border-bottom: 1px solid #dce7f0;
+}
+
+.house-panel-title {
+  margin: 0 0 4px;
+  font-size: 24px;
+  color: #0b1f3a;
+}
+
+.house-panel-subtitle {
+  margin: 0;
+  color: #71869a;
+  font-size: 13px;
+}
+
+.house-summary {
+  display: grid;
+  grid-template-columns: 1.5fr 1fr 1fr;
+  gap: 10px;
+  padding: 14px 16px 0;
+}
+
+.house-summary-card {
+  border: 1px solid #d3e0ec;
+  border-radius: 13px;
+  padding: 13px 15px;
+  background: white;
+}
+
+.house-summary-card.balance {
+  background: #0b1f3a;
+  color: white;
+  border-color: #0b1f3a;
+}
+
+.house-summary-card span {
+  display: block;
+  margin-bottom: 5px;
+  font-size: 11px;
+  color: #71869a;
+}
+
+.house-summary-card.balance span { color: #b8c9da; }
+
+.house-summary-card strong {
+  display: block;
+  font-size: 21px;
+}
+
+.house-summary-card.income strong { color: #176b9d; }
+.house-summary-card.expense strong { color: #b14f5f; }
+
+.house-table-wrap {
+  margin-top: 14px;
+  border-top: 1px solid #dce7f0;
+}
+
+.house-panel .transaction-table {
+  border-radius: 0;
+  box-shadow: none;
+}
+
+.house-empty {
+  padding: 36px 20px;
+  text-align: center;
+  color: #6c8298;
+}
+
+.state-message {
+  margin-top: 14px;
+  padding: 16px;
+  border-radius: 12px;
+  text-align: center;
+  color: #60758d;
+  background: rgba(255,255,255,.6);
+  border: 1px solid #d5e2ee;
+}
+
+.state-message.error {
+  color: #b4232f;
+  background: #fdeeee;
+  border-color: #f5bcbc;
+}
+
+.retry-button {
+  margin-left: 10px;
+  border: 1px solid #f0b8b8;
+  border-radius: 8px;
+  padding: 6px 12px;
+  background: white;
+  color: #b4232f;
+  cursor: pointer;
+  font-weight: 700;
+}
+  </style>
+</head>
+<body>
+  <main class="app">
+    <header class="header">
+      <div>
+        <p class="eyebrow">HOUSE FINANCE</p>
+        <h1>รายรับ - รายจ่าย</h1>
+        <p class="subtitle">บันทึกและดูรายการเงินของบ้าน</p>
+      </div>
+      <button class="add-button" id="addButton">+ เพิ่มรายการ</button>
+    </header>
+
+    <section class="summary">
+      <div class="balance-card">
+        <span class="summary-label" id="balanceLabel">เงินคงเหลือ</span>
+        <strong id="balance">฿0</strong>
+      </div>
+      <div class="summary-card income">
+        <span class="summary-label">รายรับ</span>
+        <strong id="income">฿0</strong>
+      </div>
+      <div class="summary-card expense">
+        <span class="summary-label" id="expenseLabel">รายจ่าย</span>
+        <strong id="expense">฿0</strong>
+      </div>
+    </section>
+
+    <section class="toolbar">
+      <div class="location-widget" id="locationWidget">
+        <button class="location-select-button" id="locationSelectButton" type="button" aria-expanded="false">
+          <span id="selectedLocation">บ้าน: ทั้งหมด</span>
+          <span class="category-chevron">▼</span>
+        </button>
+        <div class="location-menu" id="locationMenu">
+          <button class="location-option active" type="button" data-location="all">ทั้งหมด</button>
+          <div id="locationOptionsDynamic"></div>
+        </div>
+      </div>
+
+      <div class="category-widget" id="categoryWidget">
+        <button class="category-select-button" id="categorySelectButton" type="button" aria-expanded="false">
+          <span id="selectedCategory">หมวดหมู่: ทั้งหมด</span>
+          <span class="category-chevron">▼</span>
+        </button>
+
+        <div class="category-menu" id="categoryMenu">
+          <button class="category-option active" type="button" data-category="all">ทั้งหมด</button>
+          <div id="categoryOptionsDynamic"></div>
+        </div>
+      </div>
+
+      <div class="date-filter-group">
+        <label class="month-select">
+          <span>เดือน</span>
+          <select id="monthSelect"></select>
+        </label>
+
+        <label class="month-select">
+          <span>วันที่</span>
+          <select id="daySelect"></select>
+        </label>
+      </div>
+    </section>
+
+    <section class="shelf">
+      <div class="shelf-heading">
+        <div>
+          <p class="eyebrow">HOUSE TRANSACTIONS</p>
+          <h2 id="currentPeriodTitle">รายการแยกตามบ้าน</h2>
+        </div>
+        <span id="itemCount">0 รายการ</span>
+      </div>
+
+      <div id="housesContainer" class="houses-container">
+        <!-- แต่ละบ้านจะถูกสร้างเป็นตารางแยกกันโดย JavaScript -->
+      </div>
+
+      <div id="loadingState" class="state-message" hidden>กำลังโหลดข้อมูล...</div>
+      <div id="errorState" class="state-message error" hidden>
+        โหลดข้อมูลไม่สำเร็จ ลองใหม่อีกครั้ง
+        <button id="retryButton" class="retry-button" type="button">ลองใหม่</button>
+      </div>
+    </section>
+  </main>
+
+  <dialog id="imageDialog" class="image-dialog">
+    <button class="close" id="closeImageDialog" aria-label="ปิด">×</button>
+    <img id="previewImage" src="" alt="ภาพประกอบรายการ" referrerpolicy="no-referrer" loading="lazy">
+    <p class="image-caption">ภาพประกอบจากแบบฟอร์ม</p>
+  </dialog>
+
+  <script>
+function normalizeLocation(value){
+  const text=String(value??"").trim().replace(/\s+/g," ");
+  if(!text)return "";
+  const compact=text.replace(/\s/g,"");
+  if(compact==="บ้าน1")return "บ้าน 1";
+  if(compact==="บ้าน2")return "บ้าน 2";
+  return text;
+}
+
+/*
+  ====== ตั้งค่าการเชื่อมต่อ ======
+  แทนที่ URL ด้านล่างด้วย Web App URL ที่ได้จากการ Deploy Google Apps Script
+  (Deploy > New deployment > Web app > Execute as: Me > Who has access: Anyone)
+
+  Backend ตรวจสอบรูปแบบข้อมูลและจำกัดค่าที่รับเข้าแทนการฝัง Secret ไว้ใน Frontend
+*/
+const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycby1sjPJMsU24E-DNbBNWcezr7LhGLc2kLM4KOGnc9pw9CpC_PWTIIcjl0B0MWNKdUrfDw/exec";
+
+let transactions = [];
+let categories = [];
+let locations = [];
+
+const housesContainer=document.querySelector("#housesContainer");
+const itemCount=document.querySelector("#itemCount");
+const currentPeriodTitle=document.querySelector("#currentPeriodTitle");
+const monthSelect=document.querySelector("#monthSelect");
+const daySelect=document.querySelector("#daySelect");
+const locationSelectButton=document.querySelector("#locationSelectButton");
+const locationMenu=document.querySelector("#locationMenu");
+const selectedLocation=document.querySelector("#selectedLocation");
+const locationOptionsDynamic=document.querySelector("#locationOptionsDynamic");
+const categorySelectButton=document.querySelector("#categorySelectButton");
+const categoryMenu=document.querySelector("#categoryMenu");
+const selectedCategory=document.querySelector("#selectedCategory");
+const categoryOptionsDynamic=document.querySelector("#categoryOptionsDynamic");
+const imageDialog=document.querySelector("#imageDialog");
+const previewImage=document.querySelector("#previewImage");
+const closeImageDialog=document.querySelector("#closeImageDialog");
+const loadingState=document.querySelector("#loadingState");
+const errorState=document.querySelector("#errorState");
+const retryButton=document.querySelector("#retryButton");
+
+
+const summaryValues={balance:0,income:0,expense:0,expenseCategory:"ทั้งหมด"};
+let selectedLocationValue="all";
+let selectedCategoryValue="all";
+let selectedMonthValue="all";
+let selectedDayValue="all";
+let openId=null;
+
+const thaiMonthNames=["ม.ค.","ก.พ.","มี.ค.","เม.ย.","พ.ค.","มิ.ย.","ก.ค.","ส.ค.","ก.ย.","ต.ค.","พ.ย.","ธ.ค."];
+
+// อ่านค่า datetime แบบ ISO (เช่น "2026-02-20T14:49:00") กลับมาเป็นชิ้นส่วนวันที่
+// ที่ใช้งานง่าย (ปียังเป็น ค.ศ. ณ จุดนี้ ยังไม่แปลงเป็น พ.ศ.)
+function parseIsoDate(iso){
+  if(!iso) return null;
+  const [datePart,timePart=""]=String(iso).split("T");
+  const [y,m,d]=datePart.split("-").map(Number);
+  if(!y||!m||!d) return null;
+  return {
+    year:y,
+    monthIndex:m-1,
+    monthName:thaiMonthNames[m-1],
+    day:d,
+    time:timePart.slice(0,5) // "HH:MM"
+  };
+}
+// แปลงเป็นข้อความวันที่แบบไทย (พ.ศ.) สำหรับแสดงผลเท่านั้น
+function formatThaiDate(iso){
+  const d=parseIsoDate(iso);
+  if(!d) return "";
+  return `${d.day} ${d.monthName} ${d.year+543}`;
+}
+function formatThaiTime(iso){
+  const d=parseIsoDate(iso);
+  return d&&d.time ? `${d.time} น.` : "";
+}
+function monthKey(item){
+  const d=parseIsoDate(item.datetime); return d?`${d.year}-${String(d.monthIndex).padStart(2,"0")}`:"";
+}
+function dayKey(item){
+  const d=parseIsoDate(item.datetime); return d?`${monthKey(item)}-${String(d.day).padStart(2,"0")}`:"";
+}
+function monthLabel(key){
+  if(key==="all") return "ทั้งหมด";
+  const [y,m]=key.split("-").map(Number);
+  return `${thaiMonthNames[m]} ${y+543}`;
+}
+function money(v){
+  return new Intl.NumberFormat("th-TH",{style:"currency",currency:"THB",minimumFractionDigits:0,maximumFractionDigits:2}).format(v);
+}
+
+function populateMonthOptions(){
+  const months=[...new Set(transactions.map(monthKey).filter(Boolean))].sort().reverse();
+  monthSelect.innerHTML=`<option value="all">ทั้งหมด</option>${months.map(k=>`<option value="${k}">${monthLabel(k)}</option>`).join("")}`;
+  selectedMonthValue=months[0]||"all";
+  monthSelect.value=selectedMonthValue;
+  populateDayOptions();
+}
+function populateDayOptions(){
+  const rows=transactions
+    .filter(x=>selectedLocationValue==="all"||x.location===selectedLocationValue)
+    .filter(x=>selectedMonthValue==="all"||monthKey(x)===selectedMonthValue)
+    .map(x=>({key:dayKey(x),date:parseIsoDate(x.datetime)}))
+    .filter(x=>x.date)
+    .sort((a,b)=>b.key.localeCompare(a.key));
+  const seen=new Set(), unique=[];
+  rows.forEach(x=>{if(!seen.has(x.key)){seen.add(x.key);unique.push(x);}});
+  daySelect.innerHTML=`<option value="all">ทั้งหมด</option>${unique.map(x=>`<option value="${x.key}">${x.date.day} ${x.date.monthName} ${x.date.year+543}</option>`).join("")}`;
+  selectedDayValue="all";
+  daySelect.value="all";
+}
+
+function renderLocationMenu(){
+  locationOptionsDynamic.innerHTML=locations.map(name=>
+    `<button class="location-option ${selectedLocationValue===name?"active":""}" type="button" data-location="${escapeHtml(name)}">${name}</button>`
+  ).join("");
+
+  locationOptionsDynamic.querySelectorAll(".location-option").forEach(o=>
+    o.addEventListener("click",()=>selectLocation(o.dataset.location))
+  );
+
+  document.querySelector('.location-option[data-location="all"]')
+    .classList.toggle("active",selectedLocationValue==="all");
+}
+
+// สร้างรายการหมวดหมู่ในเมนูแบบ dynamic จาก categories ที่ดึงมาจาก Data source
+// (แทนที่การ hardcode ปุ่มไว้ตรงๆ ใน HTML)
+function renderCategoryMenu(){
+  categoryOptionsDynamic.innerHTML=categories.map(name=>
+    `<button class="category-option ${selectedCategoryValue===name?"active":""}" type="button" data-category="${name}">${name}</button>`
+  ).join("");
+  categoryOptionsDynamic.querySelectorAll(".category-option").forEach(o=>
+    o.addEventListener("click",()=>selectCategory(o.dataset.category))
+  );
+  document.querySelector('.category-option[data-category="all"]')
+    .classList.toggle("active",selectedCategoryValue==="all");
+}
+
+function dateFiltered(){
+  return transactions.filter(x=>{
+    const loc=selectedLocationValue==="all"||x.location===selectedLocationValue;
+    const mm=selectedMonthValue==="all"||monthKey(x)===selectedMonthValue;
+    const dd=selectedDayValue==="all"||dayKey(x)===selectedDayValue;
+    return loc&&mm&&dd;
+  });
+}
+
+function calculateSummary(){
+  const data=dateFiltered();
+
+  // รายรับของกล่องรายรับ: ตามเดือน/วันที่ที่เลือก
+  // (ไม่แยกตามหมวดหมู่)
+  summaryValues.income=data
+    .filter(x=>x.type==="income")
+    .reduce((s,x)=>s+x.amount,0);
+
+  // รายจ่ายของกล่องรายจ่าย: ตามเดือน/วันที่ + หมวดหมู่ที่เลือก
+  summaryValues.expense=data
+    .filter(x=>
+      x.type==="expense" &&
+      (selectedCategoryValue==="all" || x.category===selectedCategoryValue)
+    )
+    .reduce((s,x)=>s+x.amount,0);
+
+  /*
+    เงินคงเหลือ = ยอดสะสมตั้งแต่ต้นเดือนจนถึงวันที่เลือก
+
+    ตัวอย่าง:
+    วันที่ 5  รับ +10,000
+    วันที่ 7  จ่าย -2,000
+    วันที่ 8  จ่าย -2,000
+
+    เลือกวันที่ 7  -> 8,000
+    เลือกวันที่ 8  -> 6,000
+
+    สำคัญ:
+    - ไม่สนหมวดหมู่ที่เลือก
+    - ถ้าเลือก "ทั้งหมด" ในวันที่ จะใช้ข้อมูลทั้งเดือน
+    - ถ้าเลือกวันที่ จะรวมเฉพาะรายการในเดือนเดียวกันตั้งแต่วันที่ 1
+      ถึงวันที่เลือก
+  */
+  // เงินคงเหลือใช้ขอบเขตสถานที่ + เดือน/วันที่
+  // แต่ไม่สนหมวดหมู่ เพื่อรักษากฎเดิมของระบบ
+  let balanceData = transactions.filter(x=>
+    selectedLocationValue==="all" || x.location===selectedLocationValue
+  );
+
+  if(selectedMonthValue !== "all"){
+    balanceData = balanceData.filter(x=>monthKey(x)===selectedMonthValue);
+  }
+
+  if(selectedDayValue !== "all"){
+    const selectedDate = selectedDayValue!=="all" ? parseIsoDate(selectedDayValue+"T00:00:00") : null;
+
+    if(selectedDate){
+      balanceData = balanceData.filter(x=>{
+        const d=parseIsoDate(x.datetime);
+        if(!d) return false;
+
+        const sameMonth = monthKey(x) === selectedMonthValue;
+        const onOrBeforeSelectedDay = d.day <= selectedDate.day;
+
+        return sameMonth && onOrBeforeSelectedDay;
+      });
+    }
+  }
+
+  const balanceIncome=balanceData
+    .filter(x=>x.type==="income")
+    .reduce((s,x)=>s+x.amount,0);
+
+  const balanceExpense=balanceData
+    .filter(x=>x.type==="expense")
+    .reduce((s,x)=>s+x.amount,0);
+
+  summaryValues.balance=balanceIncome-balanceExpense;
+
+  document.querySelector("#income").textContent=money(summaryValues.income);
+  document.querySelector("#expense").textContent=money(summaryValues.expense);
+  document.querySelector("#balance").textContent=money(summaryValues.balance);
+  document.querySelector("#balanceLabel").textContent=selectedLocationValue==="all"?"เงินคงเหลือรวม":`เงินคงเหลือ ${selectedLocationValue}`;
+
+  document.querySelector("#expenseLabel").innerHTML=
+    selectedCategoryValue==="all"
+      ? "รายจ่าย"
+      : `รายจ่าย <span class="summary-filter-label">(${selectedCategoryValue})</span>`;
+}
+function escapeHtml(value){
+  return String(value??"")
+    .replace(/&/g,"&amp;")
+    .replace(/</g,"&lt;")
+    .replace(/>/g,"&gt;")
+    .replace(/"/g,"&quot;")
+    .replace(/'/g,"&#039;");
+}
+
+function houseMatches(x, house){
+  const itemLocation=normalizeLocation(x.location);
+  return house==="ยังไม่ระบุบ้าน" ? !itemLocation : itemLocation===normalizeLocation(house);
+}
+
+function getHouseSummary(house, rows){
+  const income=rows
+    .filter(x=>houseMatches(x,house) && x.type==="income")
+    .reduce((s,x)=>s+Number(x.amount||0),0);
+
+  const expense=rows
+    .filter(x=>houseMatches(x,house) && x.type==="expense")
+    .filter(x=>selectedCategoryValue==="all"||x.category===selectedCategoryValue)
+    .reduce((s,x)=>s+Number(x.amount||0),0);
+
+  // Balance never follows category; it is scoped only by house and date period.
+  let balanceData=transactions.filter(x=>houseMatches(x,house));
+  if(selectedMonthValue!=="all") balanceData=balanceData.filter(x=>monthKey(x)===selectedMonthValue);
+
+  if(selectedDayValue!=="all"){
+    const selectedDate=parseIsoDate(selectedDayValue+"T00:00:00");
+    if(selectedDate){
+      balanceData=balanceData.filter(x=>{
+        const d=parseIsoDate(x.datetime);
+        return d && monthKey(x)===selectedMonthValue && d.day<=selectedDate.day;
+      });
+    }
+  }
+
+  const balanceIncome=balanceData.filter(x=>x.type==="income")
+    .reduce((s,x)=>s+Number(x.amount||0),0);
+  const balanceExpense=balanceData.filter(x=>x.type==="expense")
+    .reduce((s,x)=>s+Number(x.amount||0),0);
+
+  return {income,expense,balance:balanceIncome-balanceExpense};
+}
+
+function render(){
+  const filtered=dateFiltered()
+    .filter(x=>selectedCategoryValue==="all"||x.category===selectedCategoryValue)
+    .sort((a,b)=>a.datetime.localeCompare(b.datetime));
+
+  itemCount.textContent=`${filtered.length} รายการ`;
+  currentPeriodTitle.textContent=selectedMonthValue==="all" ? "รายการแยกตามบ้าน" : `รายการ ${monthLabel(selectedMonthValue)}`;
+
+  // แสดงบ้านหลักก่อน แล้วตามด้วยสถานที่เก่าที่มีข้อมูลอยู่จริง
+  const hasUnassigned=transactions.some(x=>!String(x.location||"").trim());
+  const orderedHouses=[...new Set([
+    "บ้าน 1",
+    "บ้าน 2",
+    ...locations,
+    ...(hasUnassigned?["ยังไม่ระบุบ้าน"]:[])
+  ])].filter(Boolean);
+
+  const visibleHouses=selectedLocationValue==="all"
+    ? orderedHouses
+    : orderedHouses.filter(h=>h===selectedLocationValue);
+
+  housesContainer.innerHTML=visibleHouses.map(house=>{
+    const rows=filtered.filter(x=>houseMatches(x,house));
+    const summary=getHouseSummary(house, dateFiltered());
+
+    const tableRows=rows.length ? rows.map(item=>{
+      const open=openId===item.id;
+      return `
+        <tr class="transaction-row ${open?"is-open":""}">
+          <td><span class="category-badge ${item.type==="expense" ? "expense-badge" : ""}">${item.type==="income"?"รายรับ":"รายจ่าย"}</span></td>
+          <td><span class="table-date">${formatThaiDate(item.datetime)}</span></td>
+          <td><button class="detail-button" data-id="${item.id}" type="button">${escapeHtml(item.title)} <span class="row-time">${formatThaiTime(item.datetime)}</span></button></td>
+          <td><span class="table-amount ${item.type}">${item.type==="income"?"+":"-"} ${money(item.amount)}</span></td>
+        </tr>
+        ${open?`
+        <tr class="detail-row-full"><td colspan="4"><div class="detail-panel">
+          <div class="detail-line type ${item.type==="income"?"type-income":"type-expense"}">${item.type==="income"?"รายรับ":"รายจ่าย"}</div>
+          <div class="detail-line category-detail">${escapeHtml(item.category)}</div>
+          <div class="detail-line title">${escapeHtml(item.title)}</div>
+          <div class="detail-line description">${escapeHtml(item.detail)}</div>
+          <div class="detail-line date-time">${formatThaiTime(item.datetime)} ${formatThaiDate(item.datetime)}</div>
+          <div class="detail-line">${item.image?`<button class="image-trigger" type="button" data-image-id="${item.id}">ภาพประกอบ (สลิป) — กดเพื่อดูภาพ</button>`:`<span class="no-image">ไม่มีภาพประกอบ</span>`}</div>
+        </div></td></tr>`:""}`;
+    }).join("") : `<tr><td colspan="4"><div class="house-empty">ไม่มีรายการของ${escapeHtml(house)}ตามตัวกรองที่เลือก</div></td></tr>`;
+
+    return `
+      <section class="house-panel" data-house="${escapeHtml(house)}">
+        <div class="house-panel-header">
+          <h3 class="house-panel-title">${escapeHtml(house)}</h3>
+          <p class="house-panel-subtitle">คำนวณรายรับ รายจ่าย และเงินคงเหลือแยกจากบ้านอื่น</p>
+        </div>
+        <div class="house-summary">
+          <div class="house-summary-card balance"><span>เงินคงเหลือ</span><strong>${money(summary.balance)}</strong></div>
+          <div class="house-summary-card income"><span>รายรับ</span><strong>${money(summary.income)}</strong></div>
+          <div class="house-summary-card expense"><span>รายจ่าย${selectedCategoryValue!=="all"?` (${escapeHtml(selectedCategoryValue)})`:""}</span><strong>${money(summary.expense)}</strong></div>
+        </div>
+        <div class="house-table-wrap transaction-table-wrap">
+          <table class="transaction-table">
+            <thead><tr><th>ประเภท</th><th>วันที่</th><th>รายละเอียด</th><th>จำนวนเงิน</th></tr></thead>
+            <tbody>${tableRows}</tbody>
+          </table>
+        </div>
+      </section>`;
+  }).join("");
+
+  housesContainer.querySelectorAll(".detail-button").forEach(b=>b.addEventListener("click",()=>{
+    const id=Number(b.dataset.id); openId=openId===id?null:id; render();
+  }));
+
+  housesContainer.querySelectorAll(".image-trigger").forEach(b=>b.addEventListener("click",e=>{
+    e.stopPropagation();
+    const item=transactions.find(x=>x.id===Number(b.dataset.imageId));
+    if(!item?.image)return;
+    previewImage.src=toEmbeddableDriveUrl(item.image);
+    previewImage.alt=`ภาพประกอบ: ${item.title}`;
+    imageDialog.showModal();
+  }));
+}
+function toEmbeddableDriveUrl(url){
+  if(!url) return url;
+  const m = url.match(/[?&]id=([a-zA-Z0-9_-]+)/) || url.match(/\/d\/([a-zA-Z0-9_-]+)/);
+  const fileId = m ? m[1] : null;
+  if(!fileId) return url;
+  return `https://drive.google.com/thumbnail?id=${fileId}&sz=w1000`;
+}
+function refresh(){calculateSummary();render();}
+function selectLocation(v){
+  selectedLocationValue=v;
+  openId=null;
+  selectedLocation.textContent=v==="all"?"บ้าน: ทั้งหมด":`บ้าน: ${v}`;
+  renderLocationMenu();
+  locationMenu.classList.remove("open");
+  locationSelectButton.setAttribute("aria-expanded","false");
+  populateDayOptions();
+  refresh();
+}
+
+function selectCategory(v){
+  selectedCategoryValue=v; openId=null;
+  selectedCategory.textContent=v==="all"?"หมวดหมู่: ทั้งหมด":`หมวดหมู่: ${v}`;
+  renderCategoryMenu();
+  categoryMenu.classList.remove("open"); categorySelectButton.setAttribute("aria-expanded","false"); refresh();
+}
+
+locationSelectButton.addEventListener("click",e=>{
+  e.stopPropagation();
+  const open=locationMenu.classList.toggle("open");
+  categoryMenu.classList.remove("open");
+  categorySelectButton.setAttribute("aria-expanded","false");
+  locationSelectButton.setAttribute("aria-expanded",String(open));
+});
+
+document.querySelector('.location-option[data-location="all"]').addEventListener("click",()=>selectLocation("all"));
+
+categorySelectButton.addEventListener("click",e=>{
+  e.stopPropagation();
+  const open=categoryMenu.classList.toggle("open");
+  locationMenu.classList.remove("open");
+  locationSelectButton.setAttribute("aria-expanded","false");
+  categorySelectButton.setAttribute("aria-expanded",String(open));
+});
+document.querySelector('.category-option[data-category="all"]').addEventListener("click",()=>selectCategory("all"));
+
+monthSelect.addEventListener("change",()=>{selectedMonthValue=monthSelect.value;openId=null;populateDayOptions();refresh();});
+daySelect.addEventListener("change",()=>{selectedDayValue=daySelect.value;openId=null;refresh();});
+document.addEventListener("click",e=>{
+  if(!document.querySelector("#categoryWidget").contains(e.target)){
+    categoryMenu.classList.remove("open");
+    categorySelectButton.setAttribute("aria-expanded","false");
+  }
+  if(!document.querySelector("#locationWidget").contains(e.target)){
+    locationMenu.classList.remove("open");
+    locationSelectButton.setAttribute("aria-expanded","false");
+  }
+});
+closeImageDialog.addEventListener("click",()=>{imageDialog.close();previewImage.src="";});
+imageDialog.addEventListener("click",e=>{if(e.target===imageDialog){imageDialog.close();previewImage.src="";}});
+document.querySelector("#addButton").addEventListener("click",()=>{window.location.href="form.html";});
+
+// ส่ง POST ไปยัง Apps Script โดยใช้ text/plain เพื่อเลี่ยง CORS preflight
+// (Apps Script Web App ไม่รองรับ preflight request ของ Content-Type: application/json โดยตรง)
+async function postToBackend(payload){
+  const res=await fetch(APPS_SCRIPT_URL,{
+    method:"POST",
+    headers:{"Content-Type":"text/plain;charset=utf-8"},
+    body:JSON.stringify(payload)
+  });
+  return res.json();
+}
+
+function showLoading(){
+  loadingState.hidden=false;
+  errorState.hidden=true;
+  housesContainer.style.display="none";
+}
+function showError(){
+  loadingState.hidden=true;
+  errorState.hidden=false;
+  housesContainer.style.display="none";
+}
+function showData(){
+  loadingState.hidden=true;
+  errorState.hidden=true;
+  housesContainer.style.display="";
+}
+
+async function loadData(){
+  showLoading();
+  try{
+    const res=await fetch(APPS_SCRIPT_URL);
+    if(!res.ok) throw new Error("network error");
+    const data=await res.json();
+
+    transactions=(data.transactions||[]).map(t=>({
+      id:Number(t.id),
+      datetime:t.datetime,
+      location:normalizeLocation(t.location),
+      type:t.type,
+      category:t.category||"",
+      title:t.title,
+      detail:t.detail||"",
+      amount:Number(t.amount),
+      image:t.imageUrl||""
+    }));
+    categories=data.categories||[];
+    locations=[...new Set([
+      "บ้าน 1",
+      "บ้าน 2",
+      ...(data.locations||[]),
+      ...transactions.map(t=>String(t.location||"").trim()).filter(Boolean)
+    ])].filter(Boolean).sort((a,b)=>{
+      const order={"บ้าน 1":0,"บ้าน 2":1};
+      if(a in order || b in order) return (order[a]??999)-(order[b]??999);
+      return a.localeCompare(b,"th");
+    });
+
+    renderLocationMenu();
+    renderCategoryMenu();
+    populateMonthOptions();
+    refresh();
+    showData();
+  }catch(err){
+    showError();
+  }
+}
+
+retryButton.addEventListener("click",loadData);
+
+loadData();
+  </script>
+</body>
+</html>

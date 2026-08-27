@@ -1,0 +1,586 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>เพิ่มรายการ — รายรับ - รายจ่าย</title>
+<style>
+* { box-sizing: border-box; }
+
+:root {
+  font-family: "Noto Sans Thai", "Tahoma", sans-serif;
+  color: #10233f;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at 15% 0%, rgba(255,255,255,.85), transparent 32rem),
+    #eef5fb;
+}
+
+.wrap {
+  width: min(640px, calc(100% - 32px));
+  margin: 0 auto;
+  padding: 42px 0 64px;
+}
+
+.back-link {
+  display: inline-block;
+  margin-bottom: 18px;
+  color: #315f8c;
+  font-weight: 700;
+  text-decoration: none;
+  font-size: 14px;
+}
+
+.back-link:hover { text-decoration: underline; }
+
+h1 {
+  margin: 0 0 6px;
+  font-size: clamp(26px, 5vw, 34px);
+  letter-spacing: -.03em;
+}
+
+.subtitle {
+  margin: 0 0 26px;
+  color: #60758d;
+}
+
+form {
+  background: #fff;
+  border: 1px solid #d5e2ee;
+  border-radius: 18px;
+  padding: 26px;
+  box-shadow: 0 8px 24px rgba(22, 63, 103, .06);
+}
+
+.field {
+  margin-bottom: 20px;
+}
+
+.field label {
+  display: block;
+  font-weight: 700;
+  font-size: 14px;
+  margin-bottom: 8px;
+  color: #173653;
+}
+
+.field .hint {
+  font-weight: 400;
+  color: #8397ac;
+  font-size: 12px;
+  margin-left: 6px;
+}
+
+input[type="text"],
+input[type="number"],
+input[type="date"],
+textarea,
+select {
+  width: 100%;
+  border: 1px solid #c9d9e7;
+  border-radius: 10px;
+  padding: 11px 13px;
+  font: inherit;
+  color: #0b1f3a;
+  background: white;
+}
+
+.date-thai-preview {
+  margin-top: 6px;
+  font-size: 12.5px;
+  color: #60758d;
+}
+
+.time-select-group {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.time-select-group select {
+  width: auto;
+  flex: 1;
+  text-align: center;
+}
+
+.time-colon {
+  font-weight: 700;
+  color: #60758d;
+}
+
+.time-suffix {
+  font-weight: 700;
+  color: #173653;
+  white-space: nowrap;
+}
+
+textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+input:focus, textarea:focus, select:focus {
+  outline: 2px solid #8eabc2;
+  outline-offset: 1px;
+}
+
+.type-toggle {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.type-toggle input { display: none; }
+
+.type-toggle label {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #c9d9e7;
+  border-radius: 10px;
+  padding: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  color: #60758d;
+  background: #f7fbfe;
+}
+
+.type-toggle input:checked + label.income-label {
+  border-color: #176b9d;
+  background: #e6f1f8;
+  color: #0b416c;
+}
+
+.type-toggle input:checked + label.expense-label {
+  border-color: #b14f5f;
+  background: #fdeeee;
+  color: #92222f;
+}
+
+.row-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.image-drop {
+  border: 2px dashed #c9d9e7;
+  border-radius: 12px;
+  padding: 20px;
+  text-align: center;
+  cursor: pointer;
+  color: #60758d;
+  background: #f7fbfe;
+}
+
+.image-drop:hover {
+  border-color: #8eabc2;
+}
+
+.image-drop input { display: none; }
+
+.image-preview-wrap {
+  margin-top: 14px;
+  position: relative;
+  display: none;
+}
+
+.image-preview-wrap.show { display: block; }
+
+.image-preview-wrap img {
+  width: 100%;
+  max-height: 320px;
+  object-fit: contain;
+  border-radius: 10px;
+  background: #eaf3fa;
+  border: 1px solid #d5e2ee;
+}
+
+.remove-image {
+  margin-top: 8px;
+  border: 1px solid #f0b8b8;
+  border-radius: 8px;
+  padding: 7px 12px;
+  background: white;
+  color: #b4232f;
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 13px;
+}
+
+.field-error {
+  color: #b4232f;
+  font-size: 13px;
+  margin-top: 6px;
+  display: none;
+}
+
+.field-error.show { display: block; }
+
+.submit-button {
+  width: 100%;
+  border: 0;
+  border-radius: 12px;
+  padding: 15px;
+  background: #0b1f3a;
+  color: white;
+  font-weight: 700;
+  font-size: 16px;
+  cursor: pointer;
+  box-shadow: 0 7px 18px rgba(35,31,25,.12);
+}
+
+.submit-button:disabled {
+  opacity: .6;
+  cursor: not-allowed;
+}
+
+.form-message {
+  margin-top: 16px;
+  padding: 13px 15px;
+  border-radius: 10px;
+  font-size: 14px;
+  display: none;
+}
+
+.form-message.show { display: block; }
+
+.form-message.success {
+  background: #e9f7ee;
+  border: 1px solid #b6e3c6;
+  color: #1c6b3a;
+}
+
+.form-message.error {
+  background: #fdeeee;
+  border: 1px solid #f5bcbc;
+  color: #92222f;
+}
+
+select#category:disabled {
+  color: #9fb1c2;
+}
+</style>
+</head>
+<body>
+  <main class="wrap">
+    <a class="back-link" href="index.html">‹ กลับหน้ารายการ</a>
+    <h1>เพิ่มรายการ</h1>
+    <p class="subtitle">กรอกข้อมูลรายรับ / รายจ่าย พร้อมแนบภาพสลิปได้</p>
+
+    <form id="entryForm" novalidate>
+      <div class="field">
+        <label>ประเภท</label>
+        <div class="type-toggle">
+          <input type="radio" name="type" id="typeIncome" value="income">
+          <label class="income-label" for="typeIncome">รายรับ</label>
+          <input type="radio" name="type" id="typeExpense" value="expense" checked>
+          <label class="expense-label" for="typeExpense">รายจ่าย</label>
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="location">บ้าน</label>
+        <select id="location" name="location">
+          <option value="">กำลังโหลดรายชื่อบ้าน...</option>
+        </select>
+        <div class="field-error" id="locationError">กรุณาเลือกบ้าน</div>
+      </div>
+
+      <div class="field" id="categoryField">
+        <label for="category">หมวดหมู่ <span class="hint">(ใช้กับรายจ่ายเท่านั้น)</span></label>
+        <select id="category" name="category">
+          <option value="">กำลังโหลดหมวดหมู่...</option>
+        </select>
+        <div class="field-error" id="categoryError">กรุณาเลือกหมวดหมู่</div>
+      </div>
+
+      <div class="field">
+        <label for="title">ชื่อรายการ</label>
+        <input type="text" id="title" name="title" placeholder="เช่น ค่าน้ำมัน, เงินเดือน">
+        <div class="field-error" id="titleError">กรุณากรอกชื่อรายการ</div>
+      </div>
+
+      <div class="field">
+        <label for="detail">รายละเอียด <span class="hint">(ไม่บังคับ)</span></label>
+        <textarea id="detail" name="detail" placeholder="รายละเอียดเพิ่มเติม"></textarea>
+      </div>
+
+      <div class="field">
+        <label for="amount">จำนวนเงิน (บาท)</label>
+        <input type="number" id="amount" name="amount" min="0" step="0.01" placeholder="0.00">
+        <div class="field-error" id="amountError">กรุณากรอกจำนวนเงินให้มากกว่า 0</div>
+      </div>
+
+      <div class="field row-2">
+        <div>
+          <label for="date">วันที่</label>
+          <input type="date" id="date" name="date">
+          <div class="date-thai-preview" id="dateThaiPreview"></div>
+          <div class="field-error" id="dateError">กรุณาเลือกวันที่</div>
+        </div>
+        <div>
+          <label for="timeHour">เวลา</label>
+          <div class="time-select-group">
+            <select id="timeHour" aria-label="ชั่วโมง"></select>
+            <span class="time-colon">:</span>
+            <select id="timeMinute" aria-label="นาที"></select>
+            <span class="time-suffix">น.</span>
+          </div>
+          <div class="field-error" id="timeError">กรุณาเลือกเวลา</div>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>ภาพประกอบ (สลิป) <span class="hint">(ไม่บังคับ)</span></label>
+        <label class="image-drop" for="imageInput">
+          📎 กดเพื่อเลือกภาพสลิป หรือรูปประกอบ
+          <input type="file" id="imageInput" accept="image/*">
+        </label>
+        <div class="image-preview-wrap" id="imagePreviewWrap">
+          <img id="imagePreview" src="" alt="ตัวอย่างภาพสลิปที่แนบ">
+          <button type="button" class="remove-image" id="removeImageButton">ลบภาพนี้</button>
+        </div>
+      </div>
+
+      <button type="submit" class="submit-button" id="submitButton">ส่งข้อมูล</button>
+
+      <div class="form-message success" id="successMessage">
+        บันทึกรายการเรียบร้อยแล้ว ✅ <a href="index.html">กลับไปดูรายการ</a>
+      </div>
+      <div class="form-message error" id="errorMessage">
+        บันทึกไม่สำเร็จ กรุณาลองใหม่อีกครั้ง
+      </div>
+    </form>
+  </main>
+
+  <script>
+function normalizeLocation(value){
+  const text=String(value??"").trim().replace(/\s+/g," ");
+  if(!text)return "";
+  const compact=text.replace(/\s/g,"");
+  if(compact==="บ้าน1")return "บ้าน 1";
+  if(compact==="บ้าน2")return "บ้าน 2";
+  return text;
+}
+
+/*
+  ====== ตั้งค่าการเชื่อมต่อ ======
+  โหลดข้อมูลและส่งรายการผ่าน Google Apps Script Web App
+*/
+const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycby1sjPJMsU24E-DNbBNWcezr7LhGLc2kLM4KOGnc9pw9CpC_PWTIIcjl0B0MWNKdUrfDw/exec";
+
+const form=document.querySelector("#entryForm");
+const categorySelect=document.querySelector("#category");
+const categoryField=document.querySelector("#categoryField");
+const titleInput=document.querySelector("#title");
+const detailInput=document.querySelector("#detail");
+const amountInput=document.querySelector("#amount");
+const locationInput=document.querySelector("#location");
+const dateInput=document.querySelector("#date");
+const timeHour=document.querySelector("#timeHour");
+const timeMinute=document.querySelector("#timeMinute");
+const dateThaiPreview=document.querySelector("#dateThaiPreview");
+const imageInput=document.querySelector("#imageInput");
+const imagePreviewWrap=document.querySelector("#imagePreviewWrap");
+const imagePreview=document.querySelector("#imagePreview");
+const removeImageButton=document.querySelector("#removeImageButton");
+const submitButton=document.querySelector("#submitButton");
+const successMessage=document.querySelector("#successMessage");
+const errorMessage=document.querySelector("#errorMessage");
+
+let selectedImageBase64="";
+let selectedImageName="";
+
+const thaiMonths=["มกราคม","กุมภาพันธ์","มีนาคม","เมษายน","พฤษภาคม","มิถุนายน","กรกฎาคม","สิงหาคม","กันยายน","ตุลาคม","พฤศจิกายน","ธันวาคม"];
+function updateDateThaiPreview(){
+  if(!dateInput.value){dateThaiPreview.textContent="";return;}
+  const [y,m,d]=dateInput.value.split("-").map(Number);
+  const buddhistYear=y+543;
+  dateThaiPreview.textContent=`${d} ${thaiMonths[m-1]} ${buddhistYear}`;
+}
+dateInput.addEventListener("change",updateDateThaiPreview);
+
+(function populateTimeSelects(){
+  const pad=n=>String(n).padStart(2,"0");
+  for(let h=0;h<24;h++){
+    timeHour.insertAdjacentHTML("beforeend",`<option value="${pad(h)}">${pad(h)}</option>`);
+  }
+  for(let m=0;m<60;m++){
+    timeMinute.insertAdjacentHTML("beforeend",`<option value="${pad(m)}">${pad(m)}</option>`);
+  }
+})();
+
+// ตั้งค่าเริ่มต้นวันที่/เวลาเป็นเวลาประเทศไทยโดยตรง
+// ใช้ Asia/Bangkok เพื่อไม่พึ่ง timezone ของอุปกรณ์ และไม่แปลง UTC ซ้ำ
+function getBangkokDateTimeParts(){
+  const parts=new Intl.DateTimeFormat("en-CA",{
+    timeZone:"Asia/Bangkok",
+    year:"numeric",month:"2-digit",day:"2-digit",
+    hour:"2-digit",minute:"2-digit",hour12:false
+  }).formatToParts(new Date());
+  const get=k=>parts.find(p=>p.type===k)?.value||"";
+  return {year:get("year"),month:get("month"),day:get("day"),hour:get("hour"),minute:get("minute")};
+}
+
+function setDefaultDateTime(){
+  const now=getBangkokDateTimeParts();
+  dateInput.value=`${now.year}-${now.month}-${now.day}`;
+  timeHour.value=now.hour;
+  timeMinute.value=now.minute;
+  updateDateThaiPreview();
+}
+
+setDefaultDateTime();
+
+// โหลดหมวดหมู่จาก Data source เดียวกับหน้ารายการ เพื่อให้ตรงกันเสมอ
+async function loadDataSource(){
+  try{
+    const res=await fetch(APPS_SCRIPT_URL);
+    const data=await res.json();
+
+    const categories=data.categories||[];
+    categorySelect.innerHTML=categories.length
+      ? categories.map(c=>`<option value="${c}">${c}</option>`).join("")
+      : `<option value="">ยังไม่มีหมวดหมู่</option>`;
+
+    const locations=[...new Set(["บ้าน 1","บ้าน 2",...(data.locations||[])].filter(Boolean))];
+    locationInput.innerHTML=`<option value="">เลือกบ้าน</option>` +
+      locations.map(name=>`<option value="${String(name).replace(/"/g,"&quot;")}">${String(name).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")}</option>`).join("");
+    if(locations.includes("บ้าน 1")) locationInput.value="บ้าน 1";
+  }catch(err){
+    categorySelect.innerHTML=`<option value="">โหลดหมวดหมู่ไม่สำเร็จ</option>`;
+    locationInput.innerHTML=`<option value="">โหลดรายชื่อบ้านไม่สำเร็จ</option>`;
+  }
+}
+loadDataSource();
+
+// หมวดหมู่ใช้เฉพาะรายจ่าย (ตาม spec: รายรับไม่แยกตามหมวดหมู่)
+function updateCategoryVisibility(){
+  const isIncome=document.querySelector('input[name="type"]:checked').value==="income";
+  categoryField.style.display=isIncome?"none":"block";
+}
+document.querySelectorAll('input[name="type"]').forEach(r=>r.addEventListener("change",updateCategoryVisibility));
+updateCategoryVisibility();
+
+// แปลงไฟล์ภาพที่เลือกเป็น base64 เพื่อส่งไปเก็บที่ Google Drive ผ่าน Apps Script
+imageInput.addEventListener("change",()=>{
+  const file=imageInput.files[0];
+  if(!file)return;
+
+  if(file.size > 5*1024*1024){
+    alert("ไฟล์ภาพใหญ่เกินไป (จำกัด 5MB)");
+    imageInput.value="";
+    return;
+  }
+
+  const reader=new FileReader();
+  reader.onload=()=>{
+    selectedImageBase64=reader.result; // data:image/...;base64,....
+    selectedImageName=file.name;
+    imagePreview.src=selectedImageBase64;
+    imagePreviewWrap.classList.add("show");
+  };
+  reader.readAsDataURL(file);
+});
+
+removeImageButton.addEventListener("click",()=>{
+  selectedImageBase64="";
+  selectedImageName="";
+  imageInput.value="";
+  imagePreviewWrap.classList.remove("show");
+});
+
+function clearFieldErrors(){
+  document.querySelectorAll(".field-error").forEach(el=>el.classList.remove("show"));
+}
+
+function validate(){
+  clearFieldErrors();
+  let valid=true;
+  const isIncome=document.querySelector('input[name="type"]:checked').value==="income";
+
+  if(!isIncome && !categorySelect.value){
+    document.querySelector("#categoryError").classList.add("show");
+    valid=false;
+  }
+  if(!locationInput.value.trim()){
+    document.querySelector("#locationError").classList.add("show");
+    valid=false;
+  }
+
+  if(!titleInput.value.trim()){
+    document.querySelector("#titleError").classList.add("show");
+    valid=false;
+  }
+  if(!amountInput.value || Number(amountInput.value) <= 0){
+    document.querySelector("#amountError").classList.add("show");
+    valid=false;
+  }
+  if(!dateInput.value){
+    document.querySelector("#dateError").classList.add("show");
+    valid=false;
+  }
+  if(!timeHour.value || !timeMinute.value){
+    document.querySelector("#timeError").classList.add("show");
+    valid=false;
+  }
+  return valid;
+}
+
+form.addEventListener("submit",async(e)=>{
+  e.preventDefault();
+  successMessage.classList.remove("show");
+  errorMessage.classList.remove("show");
+
+  if(!validate())return;
+
+  const isIncome=document.querySelector('input[name="type"]:checked').value==="income";
+  const payload={
+    action:"addTransaction",
+    type:isIncome?"income":"expense",
+    category:isIncome?"":categorySelect.value,
+    location:normalizeLocation(locationInput.value),
+    title:titleInput.value.trim(),
+    detail:detailInput.value.trim(),
+    amount:Number(amountInput.value),
+    datetime:`${dateInput.value}T${timeHour.value}:${timeMinute.value}:00`,
+    imageBase64:selectedImageBase64,
+    imageName:selectedImageName
+  };
+
+  submitButton.disabled=true;
+  submitButton.textContent="กำลังบันทึก...";
+
+  try{
+    // ใช้ text/plain เพื่อเลี่ยง CORS preflight ที่ Apps Script ไม่รองรับ
+    const res=await fetch(APPS_SCRIPT_URL,{
+      method:"POST",
+      headers:{"Content-Type":"text/plain;charset=utf-8"},
+      body:JSON.stringify(payload)
+    });
+    const data=await res.json();
+    if(!data.ok) throw new Error(data.error||"บันทึกไม่สำเร็จ");
+
+    successMessage.classList.add("show");
+    form.reset();
+    setDefaultDateTime();
+    selectedImageBase64="";
+    selectedImageName="";
+    imagePreviewWrap.classList.remove("show");
+    updateCategoryVisibility();
+  }catch(err){
+    errorMessage.textContent="บันทึกไม่สำเร็จ: "+err.message;
+    errorMessage.classList.add("show");
+  }finally{
+    submitButton.disabled=false;
+    submitButton.textContent="ส่งข้อมูล";
+  }
+});
+  </script>
+</body>
+</html>
