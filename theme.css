@@ -1,0 +1,117 @@
+/* Sage Serenity theme — visual layer only. No layout or application logic is changed. */
+:root {
+  color: #243B35;
+  background: #F1E9D2;
+}
+
+body {
+  background:
+    radial-gradient(circle at 15% 0%, rgba(255,255,255,.72), transparent 32rem),
+    #F1E9D2;
+  color: #243B35;
+}
+
+.eyebrow { color: #6B8E7B; }
+.subtitle { color: #61756c; }
+
+.add-button {
+  background: #243B35;
+  box-shadow: 0 7px 18px rgba(36,59,53,.16);
+}
+
+.balance-card {
+  background: #243B35;
+  border-color: #243B35;
+}
+
+.balance-card span { color: #B7C9B1; }
+
+.balance-card,
+.summary-card {
+  border-color: #B7C9B1;
+}
+
+.summary-card { background: rgba(255,253,245,.82); }
+.summary-card span { color: #6a7d74; }
+
+.income strong { color: #527864; }
+.expense strong { color: #8b625b; }
+.summary-filter-label { color: #718078; }
+
+.location-select-button,
+.category-select-button,
+.month-select select {
+  border-color: #9fb5a5;
+  background: #E8EFE5;
+  color: #243B35;
+  box-shadow: 0 3px 10px rgba(36,59,53,.07);
+}
+
+.location-select-button:hover,
+.category-select-button:hover { border-color: #6B8E7B; }
+
+.location-menu,
+.category-menu {
+  border-color: #B7C9B1;
+  background: #FFFDF5;
+  box-shadow: 0 14px 35px rgba(36,59,53,.16);
+}
+
+.location-option,
+.category-option {
+  border-bottom-color: #DCE5D9;
+  background: #FFFDF5;
+  color: #385148;
+}
+
+.location-option:hover,
+.category-option:hover { background: #EEF3EA; }
+
+.location-option.active,
+.category-option.active {
+  background: #DCE8D9;
+  color: #243B35;
+}
+
+.category-option.add-category { color: #527864; }
+.month-select { color: #64736d; }
+
+.transaction-table-wrap {
+  border-color: #B7C9B1;
+  background: #FFFDF5;
+  box-shadow: 0 8px 24px rgba(36,59,53,.07);
+}
+
+.transaction-table th,
+.transaction-table td {
+  border-right-color: #DCE5D9;
+  border-bottom-color: #DCE5D9;
+}
+
+.transaction-table th {
+  background: #E3ECE0;
+  color: #385148;
+}
+
+.transaction-table td {
+  color: #30473f;
+  background: #FFFDF5;
+}
+
+.transaction-table tbody tr.transaction-row:hover td,
+.transaction-row.is-open td { background: #F1F5EC; }
+
+.detail-row-full td {
+  background: #F6F7EE;
+  border-bottom-color: #DCE5D9;
+}
+
+.detail-panel { background: transparent; }
+
+/* Remaining components inherit the palette above; these targeted rules keep
+   the visual language consistent without touching the existing JS/HTML. */
+button:focus-visible,
+select:focus-visible {
+  outline: 2px solid #6B8E7B;
+  outline-offset: 2px;
+}
